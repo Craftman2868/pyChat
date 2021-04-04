@@ -92,7 +92,8 @@ def disconnect(token):
     return -1,
 
 
-def send(token, message):
+def send(token, *message):
+    message = ";".join((m.decode() if type(m) == bytes else m) for m in message)
     if token not in tokens:
         return 2,
     print(getUser(token=token)["username"], ":", message)
