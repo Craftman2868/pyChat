@@ -22,15 +22,6 @@ def removeExpiredTokens():
             print(f"Token for '{getUser(userId=user)}' user deleted")
 
 
-def generateId():
-    with open("users.json", "r") as f:
-        data = load(f)
-    data["lastId"] += 1
-    with open("users.json", "w") as f:
-        dump(data, f)
-    return data["lastId"]
-
-
 def generateToken(userId, ip):
     token = b";"
     while b";" in token or token in tokens:
@@ -48,11 +39,12 @@ def createUser(username: str, password: str):
             print("User already exist")
             return 2,
     user = {
-        "id": generateId(),
+        "id": data["lastId"],
         "username": username,
         "password": md5(password.encode()).hexdigest()
     }
     data["users"].append(user)
+    data["lastId"] += 1
     with open("users.json", "w") as f:
         dump(data, f, indent=4)
     print("User created")

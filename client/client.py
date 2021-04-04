@@ -49,7 +49,6 @@ class Client:
             raise
         if r[0] == 1:
             self.token = r[1]
-            print("Connected")
         elif r[0] == 2:
             raise UserNotFoundError(self)
         elif r[0] == 3:
@@ -57,9 +56,7 @@ class Client:
     
     def createUser(self):
         r = sendCommand(self.sock, "createuser", [self.username, self.password])
-        if r[0] == 1:
-            print("User created")
-        elif r[0] == 2:
+        if r[0] == 2:
             raise UserAlreadyExistError(self)
 
     def deleteUser(self):

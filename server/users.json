@@ -1,14 +1,9 @@
 {
-    "lastId": 2,
+    "lastId": 1,
     "users": [
         {
             "id": 0,
-            "username": "test",
-            "password": "81dc9bdb52d04dc20036dbd8313ed055"
-        },
-        {
-            "id": 1,
-            "username": "tet",
+            "username": "Craftman2868",
             "password": "81dc9bdb52d04dc20036dbd8313ed055"
         }
     ]
