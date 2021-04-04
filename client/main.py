@@ -118,6 +118,7 @@ try:
                     print("Déjà déconnecté")
                 else:
                     print("Déconnecté !")
+                    break
 
         if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
             break
