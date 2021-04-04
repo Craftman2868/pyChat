@@ -32,7 +32,7 @@ class ClientAlreadyDisconnectedError(ClientDisconnectedError):
 
 
 class Client:
-    def __init__(self, username, password, autoConnect=True):
+    def __init__(self, username, password, autoConnect=False):
         self.username = username
         self.password = password
         self.token = None
@@ -73,9 +73,10 @@ class Client:
         if not self.token:
             raise ClientDisconnectedError(self)
         r = self.command("deleteuser")
-        if r == 1:
+        print("aaaaaaaaaaaaaaaaa ", r)
+        if r == (1,):
             self.token = None
-        if r == 2:
+        if r == (2,):
             raise ClientDisconnectedError(self)
 
     def disconnect(self):

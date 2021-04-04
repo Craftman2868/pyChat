@@ -1,6 +1,6 @@
 from client import Client
 
-client = Client("test", "1234", False)
+client = Client("test", "1234")
 
 client.connect()
 

@@ -8,7 +8,7 @@ class CommandNotFound(Exception):
 
 port = 1313
 
-commands = ["connect", "message", "disconnect", "createuser"]
+commands = ["connect", "message", "disconnect", "createuser", "deleteuser"]
 
 
 def sendCommand(sock: socket, command: str, arg=[]):
@@ -35,7 +35,9 @@ def sendCommand(sock: socket, command: str, arg=[]):
     print("Réponse reçue:", r)
     if not r:
         return 0,
-    return int(r[0]), r[1:]
+    if r[1:]:
+        return int(r[0]), r[1:]
+    return int(r[0]),
 
 
 def init(host: str = "localhost", sock: socket = None):

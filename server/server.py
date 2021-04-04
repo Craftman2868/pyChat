@@ -2,7 +2,7 @@ from socket import socket
 from random import randint
 from json import load, dump
 from hashlib import md5
-from time import time, sleep
+from time import time
 from threading import Thread
 
 EXPIRATION_TIME = 10  # en minutes
@@ -16,9 +16,10 @@ def randbytes(n: int = 1):
 
 
 def removeExpiredTokens():
-    for token, (_, _, expirationTime) in tokens.copy().items():
+    for token, (user, _, expirationTime) in tokens.copy().items():
         if expirationTime <= time():
             del tokens[token]
+            print(f"Token for '{getUser(userId=user)}' user deleted")
 
 
 def generateId():
@@ -95,8 +96,23 @@ def send(token, message):
     if token not in tokens:
         return 2,
     print(getUser(token=token)["username"], ":", message)
-    sleep(1)
     return 1,
+
+
+def deleteUser(token):
+    if token not in tokens:
+        return 2,
+    u = getUser(token=token)
+    if not u:
+        return 3,
+    print(f"Deleting '{u['username']}' user...")
+    with open("users.json", "r") as f:
+        data = load(f)
+    data["users"].remove(u)
+    with open("users.json", "w") as f:
+        dump(data, f, indent=4)
+    print("User deleted")
+    return -1,
 
 
 def clientThread(conn, addr):
@@ -130,7 +146,7 @@ def clientThread(conn, addr):
     conn.close()
 
 
-commands = [connect, send, disconnect, createUser]
+commands = [connect, send, disconnect, createUser, deleteUser]
 
 threads = []
 tokens = {}
