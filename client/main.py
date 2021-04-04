@@ -119,10 +119,10 @@ try:
                 else:
                     print("Déconnecté !")
 
-                if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
-                    break
-                else:
-                    exit()
+        if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
+            break
+        else:
+            exit()
 except SystemExit:
     pass
 except KeyboardInterrupt:
