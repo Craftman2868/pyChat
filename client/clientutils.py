@@ -20,7 +20,6 @@ def sendCommand(sock: socket, command: str, arg=[]):
     elif type(arg) == int:
         arg = [arg]
     elif type(arg) == list:
-        print(arg)
         for i, a in enumerate(arg):
             if type(a) == str:
                 arg[i] = a.encode()
@@ -30,9 +29,7 @@ def sendCommand(sock: socket, command: str, arg=[]):
     while arg.endswith(b";"):
         arg = arg[:-1]
     sock.send(bytearray([command, *arg]))
-    print("En attente de réponse...")
     r = sock.recv(1024)
-    print("Réponse reçue:", r)
     if not r:
         return 0,
     if r[1:]:

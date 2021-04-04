@@ -73,7 +73,6 @@ class Client:
         if not self.token:
             raise ClientDisconnectedError(self)
         r = self.command("deleteuser")
-        print("aaaaaaaaaaaaaaaaa ", r)
         if r == (1,):
             self.token = None
         if r == (2,):
@@ -97,10 +96,8 @@ class Client:
     def sendMessage(self, message):
         if not self.token:
             raise ClientDisconnectedError(self)
-        print("Envoi du message...")
         r = self.command("message", message)
-        if r == 1:
+        if r == (1,):
             print("Message envoyé !")
-            print(self.username, ":", message)
-        if r == 2:
+        if r == (2,):
             raise ClientDisconnectedError(self)
