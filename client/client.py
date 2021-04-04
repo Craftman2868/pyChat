@@ -32,20 +32,13 @@ class ClientAlreadyDisconnectedError(ClientDisconnectedError):
 
 
 class Client:
-    def __init__(self, username, password, autoConnect=False):
+    def __init__(self, username, password, host="localhost"):
         self.username = username
         self.password = password
         self.token = None
+        self.host = host
 
-        self.sock = init()
-
-        if autoConnect:
-            try:
-                self.connect()
-            except UserNotFoundError:
-                self.reconnect()
-                self.createUser()
-                self.connect()
+        self.sock = init(self.host)
 
     def command(self, command, arg=None):
         return sendCommand(self.sock, command, [self.token, str(arg) if arg is not None else []])
@@ -91,7 +84,7 @@ class Client:
 
     def reconnect(self):
         self.close()
-        self.sock = init()
+        self.sock = init(self.host)
 
     def sendMessage(self, message):
         if not self.token:
