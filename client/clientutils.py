@@ -2,23 +2,25 @@ from socket import socket
 
 
 class CommandNotFound(Exception):
-    pass
+    def __init__(self, command):
+        self.args = f"Command '{command}' not found",
 
 
 port = 1313
 
-commands = ["connect", "message", "disconnect"]
+commands = ["connect", "message", "disconnect", "createuser"]
 
 
 def sendCommand(sock: socket, command: str, arg=[]):
     if command not in commands:
-        raise CommandNotFound("Command '" + command + "' not found")
+        raise CommandNotFound(command)
     command = commands.index(command)
     if type(arg) == str:
         arg = arg.encode()
     elif type(arg) == int:
         arg = [arg]
     elif type(arg) == list:
+        print(arg)
         for i, a in enumerate(arg):
             if type(a) == str:
                 arg[i] = a.encode()

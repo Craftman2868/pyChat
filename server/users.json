@@ -1,7 +1,20 @@
-[
-    {
-        "id": 0,
-        "username": "test",
-        "password": "81dc9bdb52d04dc20036dbd8313ed055"
-    }
-]
+{
+    "lastId": 0,
+    "users": [
+        {
+            "id": 0,
+            "username": "test",
+            "password": "81dc9bdb52d04dc20036dbd8313ed055"
+        },
+        {
+            "id": 1,
+            "username": "tet",
+            "password": "81dc9bdb52d04dc20036dbd8313ed055"
+        },
+        {
+            "id": 1,
+            "username": "teat",
+            "password": "81dc9bdb52d04dc20036dbd8313ed055"
+        }
+    ]
+}

@@ -22,10 +22,12 @@ def removeExpiredTokens():
 
 
 def generateId():
-    with open("lastId", "+") as f:
-        id = int(f.read()) + 1
-        f.write(str(id))
-        return id
+    with open("users.json", "r") as f:
+        data = load(f)
+    data["lastId"] += 1
+    with open("users.json", "w") as f:
+        dump(data, f)
+    return data["lastId"]
 
 
 def generateToken(userId, ip):
@@ -37,35 +39,42 @@ def generateToken(userId, ip):
 
 
 def createUser(username: str, password: str):
+    print(f"Creating '{username}' user...")
+    with open("users.json", "r") as f:
+        data = load(f)
+    for u in data["users"]:
+        if username == u["username"]:
+            print("User already exist")
+            return 2,
     user = {
         "id": generateId(),
         "username": username,
-        "passwosrd": md5(password.encode()).hexdigest()
+        "password": md5(password.encode()).hexdigest()
     }
-    with open("users.json", "r") as f:
-        data = load(f)
-    data.append(user)
+    data["users"].append(user)
     with open("users.json", "w") as f:
-        dump(data, f)
+        dump(data, f, indent=4)
+    print("User created")
+    return 1,
 
 
 def getUser(*, username=None, userId=None, token=None):
     if token:
         return getUser(userId=tokens[token][0])
     if username is None and userId is None:
-        print("ok")
         return
     with open("users.json", "r") as f:
         data = load(f)
-    for u in data:
+    for u in data["users"]:
         if u["username"] == username or u["id"] == userId:
             return u
 
 
 def connect(username, password, ip):
+    print(f"{ip}: connecting...")
     user = getUser(username=username)
     if not user:
-        print("User not found")
+        print(f"User '{username}' not found")
         return 2,  # User not found
     if md5(password.encode()).hexdigest() != user["password"]:
         print("Invalid password")
@@ -77,12 +86,14 @@ def connect(username, password, ip):
 def disconnect(token):
     if token not in tokens:
         return 2,
+    print(f"{tokens[token][1]}: client disconnected")
     del tokens[token]
-    print("Client disconnected")
     return -1,
 
 
 def send(token, message):
+    if token not in tokens:
+        return 2,
     print(getUser(token=token)["username"], ":", message)
     sleep(1)
     return 1,
@@ -100,21 +111,26 @@ def clientThread(conn, addr):
             if command == connect:
                 args = args.decode().split(";")
                 r = command(*args, addr[0])
+            elif command == createUser:
+                args = args.decode().split(";")
+                r = command(*args)
             else:
                 args = args.split(b";")
                 if len(args) > 1:
                     args[1] = args[1].decode()
                 r = command(*args)
 
-            if r == (-1,):
-                conn.send(bytearray(1))
+            if r[0] != 1:
+                if r == (-1,):
+                    r = 1,
+                conn.send(bytearray(r))
                 break
 
             conn.send(bytearray(r))
     conn.close()
 
 
-commands = [connect, send, disconnect]
+commands = [connect, send, disconnect, createUser]
 
 threads = []
 tokens = {}
