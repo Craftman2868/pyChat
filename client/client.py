@@ -16,9 +16,13 @@ class Client:
 
     def connect(self):
         r = sendCommand(self.sock, "connect", [self.username, self.password])
-        if r[0] == 0:
+        if r[0] == 1:
             self.token = r[1]
             print("Connected")
+        elif r[0] == 2:
+            print("User not found")
+        elif r[0] == 3:
+            print("Invalid password")
 
     def disconnect(self):
         r = self.command("disconnect")

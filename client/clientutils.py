@@ -22,7 +22,11 @@ def sendCommand(sock: socket, command: str, arg=[]):
         for i, a in enumerate(arg):
             if type(a) == str:
                 arg[i] = a.encode()
+            else:
+                arg[i] = bytes(a)
         arg = b";".join(arg)
+    while arg.endswith(b";"):
+        arg = arg[:-1]
     sock.send(bytearray([command, *arg]))
     print("En attente de réponse...")
     r = sock.recv(1024)
@@ -33,6 +37,10 @@ def sendCommand(sock: socket, command: str, arg=[]):
 
 
 def init(host: str = "localhost", sock: socket = None):
-    sock = sock or socket()
-    sock.connect((host, port))
+    try:
+        sock = sock or socket()
+        sock.connect((host, port))
+    except ConnectionRefusedError:
+        print("Server fermé")
+        exit()
     return sock

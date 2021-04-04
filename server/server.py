@@ -3,10 +3,9 @@ from random import randint
 from json import load, dump
 from hashlib import md5
 from time import time, sleep
+from threading import Thread
 
-EXPIRATION_TIME = 10
-
-tokens = {}
+EXPIRATION_TIME = 10  # en minutes
 
 
 def randbytes(n: int = 1):
@@ -31,7 +30,7 @@ def generateId():
 
 def generateToken(userId, ip):
     token = b";"
-    while b";" in token:
+    while b";" in token or token in tokens:
         token = randbytes(16)
     tokens[token] = [userId, ip, time() + (EXPIRATION_TIME * 60)]
     return token
@@ -52,9 +51,9 @@ def createUser(username: str, password: str):
 
 def getUser(*, username=None, userId=None, token=None):
     if token:
-        print(type(list(tokens.keys())[0]), type(token))
-        return getUser(userId=tokens[token][2])
-    if not username and not userId:
+        return getUser(userId=tokens[token][0])
+    if username is None and userId is None:
+        print("ok")
         return
     with open("users.json", "r") as f:
         data = load(f)
@@ -66,26 +65,59 @@ def getUser(*, username=None, userId=None, token=None):
 def connect(username, password, ip):
     user = getUser(username=username)
     if not user:
-        return [1]  # User not found
+        print("User not found")
+        return 2,  # User not found
     if md5(password.encode()).hexdigest() != user["password"]:
-        return [2]  # Invalid password
-    return [0, *generateToken(user["id"], ip)]  # Return token
+        print("Invalid password")
+        return 3,  # Invalid password
+    print("Client connected")
+    return 1, *generateToken(user["id"], ip)  # Return token
 
 
 def disconnect(token):
     if token not in tokens:
-        return [1]
+        return 2,
     del tokens[token]
-    return [0]
+    print("Client disconnected")
+    return -1,
 
 
 def send(token, message):
-    print(getUser(token=token), ":", message)
+    print(getUser(token=token)["username"], ":", message)
     sleep(1)
-    return [1]
+    return 1,
+
+
+def clientThread(conn, addr):
+    while True:
+        data = conn.recv(1024)
+
+        if data:
+            commandId = int(data[0])
+            command = commands[commandId]
+            args = data[1:]
+
+            if command == connect:
+                args = args.decode().split(";")
+                r = command(*args, addr[0])
+            else:
+                args = args.split(b";")
+                if len(args) > 1:
+                    args[1] = args[1].decode()
+                r = command(*args)
+
+            if r == (-1,):
+                conn.send(bytearray(1))
+                break
+
+            conn.send(bytearray(r))
+    conn.close()
 
 
 commands = [connect, send, disconnect]
+
+threads = []
+tokens = {}
 
 host = ""
 port = 1313
@@ -95,38 +127,19 @@ sock = socket()
 try:
     sock.bind((host, port))
 
+    sock.listen()
+
     print("Serveur lancé")
 
     launched = True
 
-    sock.listen()
-
-    conn, addr = sock.accept()
-
     while launched:
+        conn, addr = sock.accept()
 
         removeExpiredTokens()
 
-        data = conn.recv(1024)
-
-        if data:
-            commandId = int(data[0])
-            command = commands[commandId]
-            args = data[1:]
-
-            print(args)
-
-            if command == connect:
-                args = args.decode().split(";")
-                r = command(*args, addr[0])
-            else:
-                args = args.split(b";")
-                args[1] = args[1].decode()
-                r = command(*args)
-
-            print(r)
-            conn.send(bytearray(r))
-            print("Réponse envoyé !")
+        threads.append(Thread(target=lambda: clientThread(conn, addr)))
+        threads[-1].run()
 
 finally:
     sock.close()
