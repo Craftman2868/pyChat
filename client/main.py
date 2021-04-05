@@ -1,5 +1,6 @@
 from client import Client, \
-    InvalidPasswordError, UserNotFoundError, UserAlreadyExistError, ClientDisconnectedError, ClientAlreadyDisconnectedError
+    InvalidPasswordError, UserNotFoundError, UserAlreadyExistError, ClientDisconnectedError, \
+    ClientAlreadyDisconnectedError
 from socket import gethostbyname, gaierror
 from sys import exit
 
@@ -28,7 +29,7 @@ def menu(*choices):
     return int(response)
 
 
-print(WELCOME_MESSAGE+"\n")
+print(WELCOME_MESSAGE + "\n")
 
 client = None
 try:
@@ -114,8 +115,10 @@ try:
                     try:
                         msg = input(client.username + " : ")
                         if msg == "quit":
+                            print("------------------------------")
                             break
                         if msg.strip() == "":
+                            print("------------------------------")
                             continue
                         client.sendMessage(msg.strip())
                     except ClientDisconnectedError:
@@ -134,6 +137,7 @@ try:
 
         while True:
             if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
+                print("------------------------------")
                 break
             else:
                 exit()
