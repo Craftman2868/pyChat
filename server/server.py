@@ -208,7 +208,7 @@ commands = [connect, send, disconnect, createUser, deleteUser, getMessages]
 tokens = {}
 
 host = ""
-port = 1313
+port = 11313
 
 sock = socket()
 

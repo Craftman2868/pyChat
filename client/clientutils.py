@@ -6,7 +6,7 @@ class CommandNotFound(Exception):
         self.args = f"Command '{command}' not found",
 
 
-port = 1313
+port = 11313
 
 commands = ["connect", "message", "disconnect", "createuser", "deleteuser", "getmessages"]
 
