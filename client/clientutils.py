@@ -8,7 +8,7 @@ class CommandNotFound(Exception):
 
 port = 1313
 
-commands = ["connect", "message", "disconnect", "createuser", "deleteuser"]
+commands = ["connect", "message", "disconnect", "createuser", "deleteuser", "getmessages"]
 
 
 def sendCommand(sock: socket, command: str, arg=[]):
@@ -26,7 +26,7 @@ def sendCommand(sock: socket, command: str, arg=[]):
             else:
                 arg[i] = bytes(a)
         arg = b";".join(arg)
-    while arg.endswith(b";"):
+    while arg.endswith(b";") and not len(arg) == 1:
         arg = arg[:-1]
     sock.send(bytearray([command, *arg]))
     r = sock.recv(1024)

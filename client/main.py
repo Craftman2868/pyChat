@@ -1,11 +1,9 @@
-from client import Client, InvalidPasswordError, UserNotFoundError, UserAlreadyExistError, ClientDisconnectedError, \
-    ClientAlreadyDisconnectedError
+from client import Client, \
+    InvalidPasswordError, UserNotFoundError, UserAlreadyExistError, ClientDisconnectedError, ClientAlreadyDisconnectedError
 from socket import gethostbyname, gaierror
 from sys import exit
 
-WELCOME_MESSAGE = """\
-Bienvenue sur PyChat 0.0.1 !
-"""
+WELCOME_MESSAGE = "Bienvenue sur PyChat 0.0.1 !"
 
 
 def askYesNo(question: str):
@@ -30,6 +28,9 @@ def menu(*choices):
     return int(response)
 
 
+print(WELCOME_MESSAGE+"\n")
+
+client = None
 try:
     while True:
         client = None
@@ -103,11 +104,22 @@ try:
                 print("Entrez 'quit' pour quitter")
                 while True:
                     try:
+                        messages = client.getMessages()
+                    except ClientDisconnectedError:
+                        client.reconnect()
+                        client.connect()
+                        messages = client.getMessages()
+                    for m in messages:
+                        print(m)
+                    try:
                         msg = input(client.username + " : ")
                         if msg == "quit":
                             break
-                        client.sendMessage(msg)
+                        if msg.strip() == "":
+                            continue
+                        client.sendMessage(msg.strip())
                     except ClientDisconnectedError:
+                        client.reconnect()
                         client.connect()
                         client.sendMessage(msg)
             else:
@@ -118,12 +130,13 @@ try:
                     print("Déjà déconnecté")
                 else:
                     print("Déconnecté !")
-                    break
+                break
 
-        if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
-            break
-        else:
-            exit()
+        while True:
+            if askYesNo("Voulez-vous vous connecter à un autre compte ?"):
+                break
+            else:
+                exit()
 except SystemExit:
     pass
 except KeyboardInterrupt:

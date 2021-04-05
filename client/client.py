@@ -41,7 +41,10 @@ class Client:
         self.sock = init(self.host)
 
     def command(self, command, arg=None):
-        return sendCommand(self.sock, command, [self.token, str(arg) if arg is not None else []])
+        try:
+            return sendCommand(self.sock, command, [self.token, str(arg) if arg is not None else []])
+        except:
+            raise ClientDisconnectedError(self)
 
     def connect(self):
         r = sendCommand(self.sock, "connect", [self.username, self.password])
@@ -91,3 +94,16 @@ class Client:
             print("Message envoyé !")
         if r == (2,):
             raise ClientDisconnectedError(self)
+
+    def getMessages(self):
+        r = self.command("getmessages")
+        if r[0] == 1:
+            r = r[1:]
+            r = b"".join(r)
+            r = r.decode()
+            r = r.split(";")
+            return r
+        if r == (2,):
+            raise ClientDisconnectedError(self)
+        if r == (4,):
+            return []
