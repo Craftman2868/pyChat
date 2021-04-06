@@ -1,7 +1,7 @@
 from socket import socket
 from random import randint
 from json import load, dump
-from hashlib import md5
+from hashlib import sha256 as hasher
 from time import time
 from threading import Thread
 from traceback import print_exc
@@ -42,7 +42,7 @@ def createUser(username: str, password: str):
     user = {
         "id": data["lastId"],
         "username": username,
-        "password": md5(password.encode()).hexdigest(),
+        "password": hasher(password.encode()).hexdigest(),
         "lastMsg": -1
     }
     data["users"].append(user)
@@ -92,7 +92,7 @@ def connect(username, password, ip):
     if not user:
         print(f"User '{username}' not found")
         return 2,  # User not found
-    if md5(password.encode()).hexdigest() != user["password"]:
+    if hasher(password.encode()).hexdigest() != user["password"]:
         print("Invalid password")
         return 3,  # Invalid password
     print("Client connected")
@@ -149,9 +149,12 @@ def getMessages(token):
             data["users"][i] = u
     with open("users.json", "w") as f:
         dump(data, f, indent=4)
-    if not messages:
+    if u["lastMsg"] == -1 or not messages:
+        u["lastMsg"] = -1
         return 3,
     else:
+        u["lastMsg"] = -1
+        print()
         messages = (getUser(userId=m[0])["username"]+" : "+m[1] for m in messages)
         return 1, *";".join(messages).encode()
 

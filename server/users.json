@@ -4,14 +4,14 @@
         {
             "id": 0,
             "username": "Craftman2868",
-            "password": "81dc9bdb52d04dc20036dbd8313ed055",
+            "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
             "lastMsg": -1
         },
         {
             "id": 1,
-            "username": "Test",
-            "password": "4a7d1ed414474e4033ac29ccb8653d9b",
-            "lastMsg": -1
+            "username": "test",
+            "password": "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0",
+            "lastMsg": 2
         }
     ]
 }
