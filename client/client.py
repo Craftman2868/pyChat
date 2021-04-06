@@ -98,6 +98,8 @@ class Client:
     def getMessages(self):
         r = self.command("getmessages")
         print(r)
+        if r == (0,):
+            return []
         if r[0] == 1:
             r = r[1:]
             r = b"".join(r)

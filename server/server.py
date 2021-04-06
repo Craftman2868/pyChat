@@ -141,19 +141,23 @@ def getMessages(token):
     for i, m in enumerate(messages):
         if m[0] == u["id"]:
             del messages[i]
-    u["lastMsg"] = -1
     with open("users.json", "r") as f:
         data = load(f)
-    for i, user in enumerate(data["users"]):
-        if user["id"] == u["id"]:
-            data["users"][i] = u
-    with open("users.json", "w") as f:
-        dump(data, f, indent=4)
     if u["lastMsg"] == -1 or not messages:
         u["lastMsg"] = -1
+        for i, user in enumerate(data["users"]):
+            if user["id"] == u["id"]:
+                data["users"][i] = u
+        with open("users.json", "w") as f:
+            dump(data, f, indent=4)
         return 3,
     else:
         u["lastMsg"] = -1
+        for i, user in enumerate(data["users"]):
+            if user["id"] == u["id"]:
+                data["users"][i] = u
+        with open("users.json", "w") as f:
+            dump(data, f, indent=4)
         print()
         messages = (getUser(userId=m[0])["username"]+" : "+m[1] for m in messages)
         return 1, *";".join(messages).encode()

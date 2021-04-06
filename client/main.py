@@ -129,7 +129,7 @@ try:
                 print("Déconnexion...")
                 try:
                     client.disconnect()
-                except ClientAlreadyDisconnectedError:
+                except ClientDisconnectedError:
                     print("Déjà déconnecté")
                 else:
                     print("Déconnecté !")
@@ -147,13 +147,13 @@ except KeyboardInterrupt:
     if client:
         try:
             client.disconnect()
-        except ClientAlreadyDisconnectedError:
+        except ClientDisconnectedError:
             pass
 except:
     if client:
         try:
             client.disconnect()
-        except ClientAlreadyDisconnectedError:
+        except ClientDisconnectedError:
             pass
     raise
 
