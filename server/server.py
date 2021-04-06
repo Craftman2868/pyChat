@@ -150,7 +150,7 @@ def getMessages(token):
     with open("users.json", "w") as f:
         dump(data, f, indent=4)
     if not messages:
-        return 4,
+        return 3,
     else:
         messages = (getUser(userId=m[0])["username"]+" : "+m[1] for m in messages)
         return 1, *";".join(messages).encode()

@@ -105,5 +105,5 @@ class Client:
             return r
         if r == (2,):
             raise ClientDisconnectedError(self)
-        if r == (4,):
+        if r == (3,):
             return []
