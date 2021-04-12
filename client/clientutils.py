@@ -1,6 +1,11 @@
 from socket import socket
 
 
+class ServerClosedError(Exception):
+    def __init__(self):
+        self.args = f"Server closed",
+
+
 class CommandNotFound(Exception):
     def __init__(self, command):
         self.args = f"Command '{command}' not found",
@@ -37,11 +42,10 @@ def sendCommand(sock: socket, command: str, arg=[]):
     return int(r[0]),
 
 
-def init(host: str = "localhost", sock: socket = None):
+def init(host: str = "127.0.0.1", sock: socket = None):
     try:
         sock = sock or socket()
         sock.connect((host, port))
     except ConnectionRefusedError:
-        print("Server fermé")
-        exit()
+        raise ServerClosedError()
     return sock

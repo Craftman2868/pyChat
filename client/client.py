@@ -1,25 +1,29 @@
 from clientutils import init, sendCommand
 
 
-class UserNotFoundError(Exception):
+class PyChatError(Exception):
+    pass
+
+
+class UserNotFoundError(PyChatError):
     def __init__(self, client):
         self.args = f"User '{client.username}' not found",
         client.close()
 
 
-class UserAlreadyExistError(Exception):
+class UserAlreadyExistError(PyChatError):
     def __init__(self, client):
         self.args = f"User '{client.username}' already exist",
         client.close()
 
 
-class InvalidPasswordError(Exception):
+class InvalidPasswordError(PyChatError):
     def __init__(self, client):
         self.args = "Invalid password",
         client.close()
 
 
-class ClientDisconnectedError(Exception):
+class ClientDisconnectedError(PyChatError):
     def __init__(self, client):
         self.args = "Client disconnected",
         client.close()
@@ -32,7 +36,7 @@ class ClientAlreadyDisconnectedError(ClientDisconnectedError):
 
 
 class Client:
-    def __init__(self, username, password, host="localhost"):
+    def __init__(self, username, password, host="127.0.0.1"):
         self.username = username
         self.password = password
         self.token = None
